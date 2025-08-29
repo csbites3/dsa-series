@@ -1,0 +1,45 @@
+class TimeMap {
+private:
+    unordered_map<string, vector<pair<int, string>>> mp; // key -> vector of timestamp, value
+public:
+    TimeMap() {
+        
+    }
+    
+    void set(string key, string value, int timestamp) {
+        // since set is always called in non-decreasing timestamp order, 
+        // you can safely push_back.
+        mp[key].push_back({timestamp, value});
+    }
+    
+    string get(string key, int timestamp) {
+        if (mp.count(key) != 1) return "";
+
+        auto& vecc = mp[key];
+        // in vecc, we find the largest timestamp <= timestamp
+        int left = 0;
+        int right = vecc.size() - 1;
+        string ans = "";
+        while(left <= right){
+            int mid = left + (right - left)/2;
+            if (vecc[mid].first == timestamp){
+                return vecc[mid].second; // exact match
+            }
+            else if (vecc[mid].first < timestamp){
+                ans = vecc[mid].second; // potential answer
+                left = mid + 1; // look for larger ones, which will be < timestamp
+            }
+            else{
+                right = mid - 1; // too large, move in left section
+            }
+        }
+        return ans;
+    }
+};
+
+/**
+ * Your TimeMap object will be instantiated and called as such:
+ * TimeMap* obj = new TimeMap();
+ * obj->set(key,value,timestamp);
+ * string param_2 = obj->get(key,timestamp);
+ */
